@@ -1,9 +1,11 @@
 package com.example.ravi.shopping;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,8 +81,8 @@ public class Login extends Fragment {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         user_name = (EditText) view.findViewById(R.id.user_name);
         password = (EditText) view.findViewById(R.id.password);
-        Button login = (Button) view.findViewById(R.id.login);
-        Button register = (Button) view.findViewById(R.id.register_user);
+        final Button login = (Button) view.findViewById(R.id.login);
+        Button reg = (Button) view.findViewById(R.id.register_user);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,25 +93,35 @@ public class Login extends Fragment {
                     @Override
                     public void onResponseReceived(String result) {
                         String val = mysqlTask.parse(result,"user_id").get(0);
-                        if(val!= "None") {
+                        if(val != "None") {
                             user_id = Integer.valueOf(val);
                             Toast.makeText(getContext(),"user present",Toast.LENGTH_SHORT).show();
                         }
                         else{
-                            Toast.makeText(getContext(),"Please register",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),"Please register/retry",Toast.LENGTH_SHORT).show();
                         }
                     }
                 };
                 mysqlTask.execute("Login",u,p);
+                if(user_id > 0){
+                    onButtonPressed(user_id);
+                }
+            }
+        });
+
+        reg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onButtonPressed(0);
             }
         });
         return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
+    public void onButtonPressed(int user_id) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onFragmentInteraction(user_id);
         }
     }
 
@@ -142,6 +154,6 @@ public class Login extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(int user_id);
     }
 }

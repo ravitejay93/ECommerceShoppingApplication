@@ -1,5 +1,6 @@
 package com.example.ravi.shopping;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,7 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +106,19 @@ public class Home extends AppCompatActivity
     }
 
     @Override
+    public void onFragmentInteraction(int user_id) {
+        if(user_id == 0) {
+            register r = new register();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home, r).commit();
+        }
+        else{
+            //handle user_id
+        }
+    }
+
+    @Override
     public void onFragmentInteraction(Uri uri) {
+
     }
 }

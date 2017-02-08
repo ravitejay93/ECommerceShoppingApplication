@@ -75,6 +75,44 @@ public abstract class mysql_task extends AsyncTask<String, Void, String> impleme
                 e.printStackTrace();
             }
         }
+        else if(params[0] == "Register"){
+            String url = "http://10.0.2.2/json_register.php";
+            try {
+                URL con = new URL(url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)con.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
+                //Log.e("ERROR",params[8]);
+                String post_data = URLEncoder.encode("user_name","UTF-8") + "=" + URLEncoder.encode(params[1],"UTF-8")+ "&" + URLEncoder.encode("password","UTF-8")+"="+URLEncoder.encode(params[2],"UTF-8")+ "&" + URLEncoder.encode("first_name","UTF-8")+"="+URLEncoder.encode(params[3],"UTF-8")+ "&" + URLEncoder.encode("last_name","UTF-8")+"="+URLEncoder.encode(params[4],"UTF-8")+ "&" + URLEncoder.encode("address","UTF-8")+"="+URLEncoder.encode(params[5],"UTF-8")+ "&" + URLEncoder.encode("phone","UTF-8")+"="+URLEncoder.encode(params[6],"UTF-8") + "&" + URLEncoder.encode("email","UTF-8")+"="+URLEncoder.encode(params[7],"UTF-8")+ "&" + URLEncoder.encode("zip","UTF-8")+"="+URLEncoder.encode(params[8],"UTF-8");
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream,"iso-8859-1"));
+                String result = "";
+                String line = "";
+                while((line = bufferedReader.readLine())!= null){
+                    result +=line;
+                    Log.e("ERROR",result);
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+
+                return result;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
         return null;
     }
 
@@ -104,17 +142,22 @@ public abstract class mysql_task extends AsyncTask<String, Void, String> impleme
         ArrayList<String> result = new ArrayList<>();
         try {
             JSONObject jsonObject = new JSONObject(data);
-            JSONArray jsonArray= jsonObject.getJSONArray("user");
-            for(int i = 0 ; i < jsonArray.length();i++){
-                jsonObject = jsonArray.getJSONObject(i);
-                result.add((String) jsonObject.get(name));
+            Log.e("Error", String.valueOf(jsonObject.get("success")));
+            if((int)jsonObject.get("success") == 1) {
 
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    jsonObject = jsonArray.getJSONObject(i);
+                    result.add((String) jsonObject.get(name));
+
+                }
+                //Log.e("Error",result.get(0));
+                return result;
             }
-            //Log.e("Error",result.get(0));
-            if(result == null){
+            else{
                 result.add("None");
+                return result;
             }
-            return result;
         } catch (JSONException e) {
             e.printStackTrace();
         }

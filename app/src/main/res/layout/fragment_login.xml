@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.ravi.shopping.Login">
+    tools:context="com.example.ravi.shopping.Login"
+    android:id="@+id/login_page">
 
     <!-- TODO: Update blank fragment layout -->
 

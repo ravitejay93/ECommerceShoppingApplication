@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 
 /**
@@ -26,6 +29,8 @@ public class register extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private mysql_task mysqlTask;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,7 +69,38 @@ public class register extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
+        final EditText user_name = (EditText) view.findViewById(R.id.new_username);
+        final EditText password = (EditText) view.findViewById(R.id.new_password);
+        final EditText first_name = (EditText) view.findViewById(R.id.new_firstname);
+        final EditText last_name = (EditText) view.findViewById(R.id.new_lastname);
+        final EditText address = (EditText) view.findViewById(R.id.new_address);
+        final EditText phone = (EditText) view.findViewById(R.id.new_phone);
+        final EditText email = (EditText) view.findViewById(R.id.new_email);
+        final EditText zip = (EditText)view.findViewById(R.id.new_zip);
+
+        Button submit = (Button)view.findViewById(R.id.submit_form);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mysqlTask = new mysql_task(getContext()) {
+                    @Override
+                    public void onResponseReceived(String result) {
+                        if(result == "None"){
+                            Toast.makeText(getContext(),"Fields are missing",Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Toast.makeText(getContext(),"user created please Login",Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                };
+                mysqlTask.execute("Register",user_name.getText().toString(),password.getText().toString(),first_name.getText().toString(),last_name.getText().toString(),address.getText().toString(),phone.getText().toString(),email.getText().toString(),zip.getText().toString());
+            }
+        });
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
