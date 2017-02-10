@@ -7,20 +7,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link register.OnFragmentInteractionListener} interface
+ * {@link categories.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link register#newInstance} factory method to
+ * Use the {@link categories#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class register extends Fragment {
+public class categories extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,11 +27,9 @@ public class register extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private mysql_task mysqlTask;
-
     private OnFragmentInteractionListener mListener;
 
-    public register() {
+    public categories() {
         // Required empty public constructor
     }
 
@@ -44,11 +39,11 @@ public class register extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment register.
+     * @return A new instance of fragment categories.
      */
     // TODO: Rename and change types and number of parameters
-    public static register newInstance(String param1, String param2) {
-        register fragment = new register();
+    public static categories newInstance(String param1, String param2) {
+        categories fragment = new categories();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -69,36 +64,7 @@ public class register extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        View view = inflater.inflate(R.layout.fragment_register, container, false);
-        final EditText user_name = (EditText) view.findViewById(R.id.new_username);
-        final EditText password = (EditText) view.findViewById(R.id.new_password);
-        final EditText first_name = (EditText) view.findViewById(R.id.new_firstname);
-        final EditText last_name = (EditText) view.findViewById(R.id.new_lastname);
-        final EditText address = (EditText) view.findViewById(R.id.new_address);
-        final EditText phone = (EditText) view.findViewById(R.id.new_phone);
-        final EditText email = (EditText) view.findViewById(R.id.new_email);
-        final EditText zip = (EditText)view.findViewById(R.id.new_zip);
-
-        Button submit = (Button)view.findViewById(R.id.submit_form);
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mysqlTask = new mysql_task(getContext()) {
-                    @Override
-                    public void onResponseReceived(String result) {
-                        String val = mysqlTask.parse(result,"user_id").get(0);
-                        if(val != "None"){
-                            Toast.makeText(getContext(),"User created",Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                };
-                mysqlTask.execute("Register",user_name.getText().toString(),password.getText().toString(),first_name.getText().toString(),last_name.getText().toString(),address.getText().toString(),phone.getText().toString(),email.getText().toString(),zip.getText().toString());
-            }
-        });
-        return view;
+        return inflater.inflate(R.layout.fragment_categories, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,10 +16,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener ,update.OnFragmentInteractionListener,categories.OnFragmentInteractionListener{
 
+    private TextView side_bar_email;
+    private TextView side_user;
+    private int user_id = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +49,9 @@ public class Home extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+        side_bar_email = (TextView) headerView.findViewById(R.id.side_name);
+        side_user =(TextView) headerView.findViewById(R.id.side_user);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -84,7 +94,11 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
-            // Handle the camera action
+
+            categories c = new categories();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home,c).commit();
+
         } else if (id == R.id.nav_deals) {
 
         } else if (id == R.id.nav_account) {
@@ -96,7 +110,15 @@ public class Home extends AppCompatActivity
 
         } else if (id == R.id.nav_contact) {
 
-        } else if (id == R.id.nav_field) {
+        } else if (id == R.id.nav_update) {
+            if(user_id < 0){
+                Toast.makeText(this,"Please Login",Toast.LENGTH_SHORT).show();
+            }
+            else {
+                update u = update.newInstance(String.valueOf(user_id));
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.content_home, u).commit();
+            }
 
         }
 
@@ -106,7 +128,7 @@ public class Home extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(int user_id) {
+    public void onFragmentInteraction(int user_id,String email, String name) {
         if(user_id == 0) {
             register r = new register();
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -114,11 +136,21 @@ public class Home extends AppCompatActivity
         }
         else{
             //handle user_id
+            this.user_id = user_id;
+            Log.e("Message",email);
+            side_bar_email.setText(email);
+            side_user.setText(name);
+
         }
     }
 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onFragmentInteraction(int user_id) {
+        this.user_id = user_id;
     }
 }

@@ -6,11 +6,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public class Login extends Fragment {
     private mysql_task mysqlTask;
 
     private int user_id = -1;
+    private String email;
 
     private OnFragmentInteractionListener mListener;
 
@@ -78,7 +81,7 @@ public class Login extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        final View view = inflater.inflate(R.layout.fragment_login, container, false);
         user_name = (EditText) view.findViewById(R.id.user_name);
         password = (EditText) view.findViewById(R.id.password);
         final Button login = (Button) view.findViewById(R.id.login);
@@ -95,33 +98,43 @@ public class Login extends Fragment {
                         String val = mysqlTask.parse(result,"user_id").get(0);
                         if(val != "None") {
                             user_id = Integer.valueOf(val);
-                            Toast.makeText(getContext(),"user present",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),"User present",Toast.LENGTH_SHORT).show();
+                            email = mysqlTask.parse(result,"email").get(0);
+                            //TextView textView = (TextView) view.findViewById(R.id.side_name);
+                            //textView.setText(mysqlTask.parse(result,"email").get(0));
+                            //Log.e("message",mysqlTask.parse(result,"email").get(0));
+                            if(user_id > 0){
+                                onButtonPressed(user_id,email,mysqlTask.parse(result,"username").get(0));
+                            }
                         }
                         else{
-                            Toast.makeText(getContext(),"Please register/retry",Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getContext(),"Please register/retry",Toast.LENGTH_SHORT).show();
                         }
                     }
                 };
-                mysqlTask.execute("Login",u,p);
-                if(user_id > 0){
-                    onButtonPressed(user_id);
+                if(u.matches("") || p.matches("")){
+                    Toast.makeText(getContext(), "Enter all field(s)", Toast.LENGTH_SHORT).show();
                 }
+                else {
+                    mysqlTask.execute("Login", u, p);
+                }
+
             }
         });
 
         reg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onButtonPressed(0);
+                onButtonPressed(0,"","");
             }
         });
         return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(int user_id) {
+    public void onButtonPressed(int user_id,String email, String name) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(user_id);
+            mListener.onFragmentInteraction(user_id,email,name);
         }
     }
 
@@ -154,6 +167,6 @@ public class Login extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(int user_id);
+        void onFragmentInteraction(int user_id,String email,String name);
     }
 }
