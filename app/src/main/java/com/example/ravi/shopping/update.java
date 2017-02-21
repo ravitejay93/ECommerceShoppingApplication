@@ -32,11 +32,12 @@ public class update extends Fragment {
     private mysql_task mysqlTask;
     private mysql_task mysqlTask_info;
     private mysql_task mysqlTask_pwd;
-    private mysql_task mysqlTask_dlt;
+    private mysql_task mysqlTask_addr;
     private EditText first_name;
     private EditText last_name;
     private EditText email;
     private EditText phone;
+    private EditText address;
 
     private String current_pwd;
     private EditText current_password;
@@ -76,6 +77,7 @@ public class update extends Fragment {
         last_name = (EditText) view.findViewById(R.id.update_lastname);
         phone = (EditText) view.findViewById(R.id.update_phone);
         email = (EditText) view.findViewById(R.id.update_email);
+        address = (EditText)view.findViewById(R.id.update_address);
 
         current_password = (EditText) view.findViewById(R.id.update_current_password);
         new_password =(EditText)view.findViewById(R.id.update_new_password);
@@ -88,6 +90,8 @@ public class update extends Fragment {
                 last_name.setText(mysqlTask.parse(result,"last_name").get(0), TextView.BufferType.EDITABLE);
                 phone.setText(mysqlTask.parse(result,"phone").get(0), TextView.BufferType.EDITABLE);
                 email.setText(mysqlTask.parse(result,"email").get(0), TextView.BufferType.EDITABLE);
+
+                address.setText(mysqlTask.parse(result,"address").get(0),TextView.BufferType.EDITABLE);
 
                 current_pwd = mysqlTask.parse(result,"password").get(0);
             }
@@ -142,7 +146,13 @@ public class update extends Fragment {
         address_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mysqlTask_addr = new mysql_task(getContext()) {
+                    @Override
+                    public void onResponseReceived(String result) {
 
+                    }
+                };
+                mysqlTask_addr.execute("update_addr",mParam1,address.getText().toString());
             }
         });
 

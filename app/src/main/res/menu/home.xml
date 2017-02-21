@@ -6,4 +6,14 @@
         android:orderInCategory="100"
         android:title="Account"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_update"
+        android:orderInCategory="100"
+        android:title="Update"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_signout"
+        android:orderInCategory="100"
+        android:title="Sign out"
+        app:showAsAction="never" />
 </menu>

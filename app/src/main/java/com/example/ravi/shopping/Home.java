@@ -1,6 +1,5 @@
 package com.example.ravi.shopping;
 
-import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,16 +15,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener ,update.OnFragmentInteractionListener,categories.OnFragmentInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener ,update.OnFragmentInteractionListener,categories.OnFragmentInteractionListener,products.OnFragmentInteractionListener{
 
     private TextView side_bar_email;
     private TextView side_user;
     private int user_id = -1;
+
+    private final String CATEGORIES = "CATEGORIES";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +37,7 @@ public class Home extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Cart!!!", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -61,6 +61,7 @@ public class Home extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            getFragmentManager().popBackStack(CATEGORIES, android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
             super.onBackPressed();
         }
     }
@@ -83,6 +84,19 @@ public class Home extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
+        if (id == R.id.action_update) {
+            return true;
+        }
+        if (id == R.id.action_signout) {
+            user_id = -1;
+            side_bar_email.setText("E-mail");
+            side_user.setText("User");
+            categories c = new categories();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home,c).commit();
+
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -97,7 +111,7 @@ public class Home extends AppCompatActivity
 
             categories c = new categories();
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_home,c).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_home,c,CATEGORIES).commit();
 
         } else if (id == R.id.nav_deals) {
 
@@ -151,6 +165,16 @@ public class Home extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(int user_id) {
+
         this.user_id = user_id;
+
+    }
+
+    @Override
+    public void onFragmentInteraction(String category) {
+        products p = products.newInstance(category);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_home, p).addToBackStack(CATEGORIES).commit();
+
     }
 }

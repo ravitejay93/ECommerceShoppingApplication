@@ -170,7 +170,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/update_address_info"
                 android:layout_gravity="center"
-                android:text="Add Address"/>
+                android:text="Update Address"/>
 
             <Button
                 android:layout_width="wrap_content"

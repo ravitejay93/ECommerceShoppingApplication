@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +14,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import static android.R.attr.name;
+import static android.R.id.list;
 
 
-public class categories extends Fragment {
+public class products extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,21 +29,20 @@ public class categories extends Fragment {
     private mysql_task mysqlTask;
     private ArrayList<String> name;
     private ArrayList<String> url;
-    private ArrayList<String> c_id;
-    private categories_view_list list;
+    private ArrayList<String> price;
+    private products_view_list list;
     private ListView listView;
     private Context context;
 
     private OnFragmentInteractionListener mListener;
 
-    public categories() {
+    public products() {
         // Required empty public constructor
     }
 
-
     // TODO: Rename and change types and number of parameters
-    public static categories newInstance(String param1) {
-        categories fragment = new categories();
+    public static products newInstance(String param1) {
+        products fragment = new products();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
@@ -58,12 +58,13 @@ public class categories extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =inflater.inflate(R.layout.fragment_categories, container, false);
+        View view =inflater.inflate(R.layout.fragment_products, container, false);
+
         context = getContext();
-        listView = (ListView)view.findViewById(R.id.list_categories);
+        listView = (ListView)view.findViewById(R.id.list_products);
         mysqlTask = new mysql_task(getContext()) {
             @Override
             public void onResponseReceived(String result) {
@@ -72,24 +73,24 @@ public class categories extends Fragment {
         };
         String result = null;
         try {
-            result = mysqlTask.execute("categories_list").get();
+            result = mysqlTask.execute("products_list",mParam1).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        name = mysqlTask.parse(result,"category_name");
-        url = mysqlTask.parse(result,"category_url");
-        c_id = mysqlTask.parse(result,"category_id");
+        name = mysqlTask.parse(result,"product_name");
+        url = mysqlTask.parse(result,"image");
+        price = mysqlTask.parse(result,"unitprice");
 
-        if(name!= null && url != null && c_id != null) {
-            list = new categories_view_list(context, name, url);
+        if(name!= null && url != null && price != null) {
+            list = new products_view_list(context, name, price,url);
 
             listView.setAdapter(list);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    onButtonPressed(c_id.get(position));
+                    //onButtonPressed(.get(position));
                     Toast.makeText(getContext(), name.get(position), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -99,9 +100,9 @@ public class categories extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String category) {
+    public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(category);
+            mListener.onFragmentInteraction(uri);
         }
     }
 
@@ -122,28 +123,8 @@ public class categories extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(String category);
+        void onFragmentInteraction(Uri uri);
     }
-
-    protected class listner implements AdapterView.OnItemClickListener{
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String Slecteditem= name.get(position);
-            Toast.makeText(getContext(), Slecteditem, Toast.LENGTH_SHORT).show();
-        }
-    }
-
 }
