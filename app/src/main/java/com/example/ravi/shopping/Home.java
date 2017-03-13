@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener ,update.OnFragmentInteractionListener,categories.OnFragmentInteractionListener,products.OnFragmentInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener ,update.OnFragmentInteractionListener,categories.OnFragmentInteractionListener,products.OnFragmentInteractionListener,product_details.OnFragmentInteractionListener{
 
     private TextView side_bar_email;
     private TextView side_user;
@@ -171,10 +171,17 @@ public class Home extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(String category) {
-        products p = products.newInstance(category);
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_home, p).addToBackStack(CATEGORIES).commit();
+    public void onFragmentInteraction(String type,String id) {
+        if(type == "category") {
+            products p = products.newInstance(id);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home, p).addToBackStack(CATEGORIES).commit();
+        }
+        else if(type == "product"){
+            product_details p =  product_details.newInstance(id);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home, p).addToBackStack(CATEGORIES).commit();
+        }
 
     }
 }

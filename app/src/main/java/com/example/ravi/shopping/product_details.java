@@ -1,49 +1,39 @@
 package com.example.ravi.shopping;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import static android.R.attr.name;
-import static android.R.id.list;
 
+public class product_details extends Fragment {
 
-public class products extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
-
     private mysql_task mysqlTask;
-    private ArrayList<String> name;
-    private ArrayList<String> url;
-    private ArrayList<String> price;
-    private products_view_list list;
-    private ListView listView;
-    private Context context;
+    private String url;
+
 
     private OnFragmentInteractionListener mListener;
 
-    public products() {
+    public product_details() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static products newInstance(String param1) {
-        products fragment = new products();
+    public static product_details newInstance(String param1) {
+        product_details fragment = new product_details();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
@@ -62,10 +52,13 @@ public class products extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =inflater.inflate(R.layout.fragment_products, container, false);
+        View view = inflater.inflate(R.layout.fragment_product_details, container, false);
+        TextView name = (TextView)view.findViewById(R.id.name);
+        TextView price = (TextView)view.findViewById(R.id.price);
+        TextView description = (TextView)view.findViewById(R.id.description);
 
-        context = getContext();
-        listView = (ListView)view.findViewById(R.id.list_products);
+        ImageView image = (ImageView)view.findViewById(R.id.image);
+
         mysqlTask = new mysql_task(getContext()) {
             @Override
             public void onResponseReceived(String result) {
@@ -74,37 +67,36 @@ public class products extends Fragment {
         };
         String result = null;
         try {
-            result = mysqlTask.execute("products_list",mParam1).get();
+            result = mysqlTask.execute("product_details",mParam1).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        final ArrayList<String> product_id = mysqlTask.parse(result,"product_id");
-        name = mysqlTask.parse(result,"product_name");
-        url = mysqlTask.parse(result,"image");
-        price = mysqlTask.parse(result,"unitprice");
 
-        if(name!= null && url != null && price != null) {
-            list = new products_view_list(context, name, price,url);
+        name.setText(mysqlTask.parse(result,"product_name").get(0));
+        url = mysqlTask.parse(result,"image").get(0);
+        price.setText(mysqlTask.parse(result,"unitprice").get(0));
+        description.setText(mysqlTask.parse(result,"product_description").get(0));
 
-            listView.setAdapter(list);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    onButtonPressed(product_id.get(position));
-                    Toast.makeText(getContext(), name.get(position), Toast.LENGTH_SHORT).show();
-                }
-            });
+        get_image img_task = new get_image();
+
+        Bitmap bitmap = null;
+        try {
+            bitmap = img_task.execute(url).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-
+        image.setImageBitmap(bitmap);
         return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String id) {
+    public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction("product",id);
+            mListener.onFragmentInteraction(uri);
         }
     }
 
@@ -127,6 +119,6 @@ public class products extends Fragment {
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(String type,String id);
+        void onFragmentInteraction(Uri uri);
     }
 }

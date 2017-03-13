@@ -101,7 +101,7 @@ public class categories extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String category) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(category);
+            mListener.onFragmentInteraction("category",category);
         }
     }
 
@@ -134,16 +134,7 @@ public class categories extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(String category);
-    }
-
-    protected class listner implements AdapterView.OnItemClickListener{
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String Slecteditem= name.get(position);
-            Toast.makeText(getContext(), Slecteditem, Toast.LENGTH_SHORT).show();
-        }
+        void onFragmentInteraction(String type,String id);
     }
 
 }
