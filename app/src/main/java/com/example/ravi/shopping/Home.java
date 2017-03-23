@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener ,update.OnFragmentInteractionListener,categories.OnFragmentInteractionListener,products.OnFragmentInteractionListener,product_details.OnFragmentInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, cart.OnFragmentInteractionListener,address_fragment.OnFragmentInteractionListener, Login.OnFragmentInteractionListener , register.OnFragmentInteractionListener ,update.OnFragmentInteractionListener,categories.OnFragmentInteractionListener,products.OnFragmentInteractionListener,product_details.OnFragmentInteractionListener{
 
     private TextView side_bar_email;
     private TextView side_user;
@@ -81,10 +81,21 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_account) {
+            Login login = new Login();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home,login).commit();
             return true;
         }
         if (id == R.id.action_update) {
+            if(user_id < 0){
+                Toast.makeText(this,"Please Login",Toast.LENGTH_SHORT).show();
+            }
+            else {
+                update u = update.newInstance(String.valueOf(user_id));
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.content_home, u).commit();
+            }
             return true;
         }
         if (id == R.id.action_signout) {
@@ -96,6 +107,23 @@ public class Home extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.content_home,c).commit();
 
             return true;
+        }
+
+        if (id == R.id.action_address) {
+
+            address_fragment fragment = address_fragment.newInstance(String.valueOf(user_id));
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home,fragment).commit();
+
+            return true;
+        }
+
+        if(id == R.id.action_cart){
+
+            cart c = cart.newInstance(String.valueOf(user_id));
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home,c).commit();
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -121,6 +149,9 @@ public class Home extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.content_home,login).commit();
 
         } else if (id == R.id.nav_orders) {
+            orders o = orders.newInstance(String.valueOf(user_id));
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home,o).commit();
 
         } else if (id == R.id.nav_contact) {
 
@@ -183,5 +214,9 @@ public class Home extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.content_home, p).addToBackStack(CATEGORIES).commit();
         }
 
+    }
+
+    public int get_user(){
+        return user_id;
     }
 }

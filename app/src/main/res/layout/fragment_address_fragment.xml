@@ -1,0 +1,62 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.ravi.shopping.address_fragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/text_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Address"
+            android:textSize="10pt"
+            android:textColor="#000000">
+        </TextView>
+        <EditText
+            android:id="@+id/new_address"
+            android:layout_height="wrap_content"
+            android:hint="Address"
+            android:inputType="textMultiLine"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:lines="5">
+        </EditText>
+
+        <TextView
+            android:id="@+id/t_zip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ZIP"
+            android:textSize="10pt"
+            android:textColor="#000000">
+        </TextView>
+        <EditText
+            android:id="@+id/add_zip"
+            android:layout_height="wrap_content"
+            android:hint="ZIP"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp">
+        </EditText>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/submit_address"
+            android:layout_gravity="center"
+            android:text="ADD"/>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id = "@+id/list_address">
+        </ListView>
+
+
+
+    </LinearLayout>
+
+</FrameLayout>
