@@ -176,7 +176,7 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
                             }
                         };
                         try {
-                            String result = mysqlTask.execute("cart_update",mParam1,pid.get(position),update_quantity.getText().toString()).get();
+                            String result = mysqlTask.execute("cart_update",pid.get(position),mParam1,update_quantity.getText().toString()).get();
                             mysqlTask.getMessage(result);
                         } catch (InterruptedException e) {
                             e.printStackTrace();

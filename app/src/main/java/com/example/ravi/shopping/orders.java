@@ -335,6 +335,7 @@ abstract class order_list_view extends ArrayAdapter{
             }
             else{
                 st.setText(status.get(position));
+                progress = Integer.valueOf(status.get(position));
             }
 
         }
@@ -349,10 +350,10 @@ abstract class order_list_view extends ArrayAdapter{
         }
 
         if(!list) {
-            progressBar.setMax(4);
+            progressBar.setMax(3);
         }
         else{
-            progressBar.setMax(3);
+            progressBar.setMax(2);
         }
 
 
