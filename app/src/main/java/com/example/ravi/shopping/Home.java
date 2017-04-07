@@ -1,5 +1,6 @@
 package com.example.ravi.shopping;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -24,6 +25,7 @@ public class Home extends AppCompatActivity
     private TextView side_bar_email;
     private TextView side_user;
     private int user_id = -1;
+    public Context context = this;
 
     private final String CATEGORIES = "CATEGORIES";
     @Override
@@ -37,8 +39,16 @@ public class Home extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Cart!!!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                if (user_id < 0) {
+                    Toast.makeText(context, "Please Login", Toast.LENGTH_SHORT).show();
+                } else{
+                    cart c = cart.newInstance(String.valueOf(user_id));
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.content_home, c).commit();
+                }
+                //Snackbar.make(view, "Cart!!!", Snackbar.LENGTH_LONG)
+                       // .setAction("Action", null).show();
             }
         });
 
@@ -80,6 +90,10 @@ public class Home extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if(user_id < 0){
+            Toast.makeText(this,"Please Login",Toast.LENGTH_SHORT).show();
+            return true;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_account) {
             Login login = new Login();
@@ -88,14 +102,11 @@ public class Home extends AppCompatActivity
             return true;
         }
         if (id == R.id.action_update) {
-            if(user_id < 0){
-                Toast.makeText(this,"Please Login",Toast.LENGTH_SHORT).show();
-            }
-            else {
-                update u = update.newInstance(String.valueOf(user_id));
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.content_home, u).commit();
-            }
+
+            update u = update.newInstance(String.valueOf(user_id));
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_home, u).commit();
+
             return true;
         }
         if (id == R.id.action_signout) {
@@ -149,9 +160,14 @@ public class Home extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.content_home,login).commit();
 
         } else if (id == R.id.nav_orders) {
-            orders o = orders.newInstance(String.valueOf(user_id));
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_home,o).commit();
+            if(user_id < 0){
+                Toast.makeText(this,"Please Login",Toast.LENGTH_SHORT).show();
+            }
+            else {
+                orders o = orders.newInstance(String.valueOf(user_id));
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.content_home, o).commit();
+            }
 
         } else if (id == R.id.nav_contact) {
 

@@ -24,6 +24,8 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import static java.lang.String.valueOf;
+
 public class cart extends Fragment implements AdapterView.OnItemSelectedListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,8 +36,13 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
     private String mParam1;
     //private String mParam2;
 
-    private int position = 0;
+    public int position = 0;
     public double total = 0;
+    public double final_total = 0;
+
+    public ArrayList<String> sales_tax;
+
+    private TextView tot;
 
     cart_list_view list;
 
@@ -118,6 +125,7 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
         ArrayList<String> address = mysqlTask.parse(result,"address");
         final ArrayList<String> aid = mysqlTask.parse(result,"address_id");
         ArrayList<String> z = mysqlTask.parse(result,"zip");
+        sales_tax = mysqlTask.parse(result,"sales_tax");
 
         Spinner spinner = (Spinner)view.findViewById(R.id.cart_spinner);
 
@@ -125,16 +133,32 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, address);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                Log.e("sales tax",sales_tax.get(pos));
+                final_total = total*(1.0 + Double.valueOf(sales_tax.get(pos))/100.0);
+                tot.setText('$'+ String.valueOf(final_total));
+                position = pos;
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
 
         if(!pid.get(0).matches("None")) {
             for (int i = 0; i < price.size(); i++) {
-                total += Float.valueOf(quantity.get(i)) * Float.valueOf(price.get(i));
+                total += Double.valueOf(quantity.get(i)) * Float.valueOf(price.get(i));
             }
+            final_total = total*(1.0 + Double.valueOf(sales_tax.get(position))/100.0);
         }
 
-        TextView tot = (TextView)view.findViewById(R.id.total_price);
-        tot.setText('$'+String.valueOf(total));
+        tot = (TextView)view.findViewById(R.id.total_price);
+        tot.setText('$'+ String.valueOf(final_total));
         Button order = (Button)view.findViewById(R.id.place_order);
         order.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +169,7 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
                     }
                 };
                 try {
-                    String result = mysqlTask.execute("place_order",mParam1,aid.get(position),String.valueOf(total)).get();
+                    String result = mysqlTask.execute("place_order",mParam1,aid.get(position), valueOf(total)).get();
                     //mysqlTask.parse(result);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -164,7 +188,7 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
                 builder.setTitle("Quantity");
                 View view1 = LayoutInflater.from(getContext()).inflate(R.layout.quantity_alert,(ViewGroup)getView(),false);
                 final EditText update_quantity = (EditText)view1.findViewById(R.id.update_quantity);
-                update_quantity.setText(String.valueOf(quantity.get(position)));
+                update_quantity.setText(valueOf(quantity.get(position)));
                 builder.setView(view1);
                 builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -224,6 +248,7 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         this.position = position;
+
     }
 
     @Override

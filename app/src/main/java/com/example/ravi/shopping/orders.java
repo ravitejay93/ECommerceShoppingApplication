@@ -23,7 +23,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
@@ -119,6 +122,8 @@ class order_list extends Fragment {
     private int position;
     private String user_id;
 
+    public int sub_position = 0;
+
     public ArrayList<String> odid = null;
     public ArrayList<String> status = null;
 
@@ -149,12 +154,13 @@ class order_list extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container, Bundle savedInstanceState) {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
-        View view = inflater.inflate( R.layout.fragment_orders_list, container, false);
-        final ListView order = (ListView)view.findViewById(R.id.list_order);
+        final View parent_view = inflater.inflate( R.layout.fragment_orders_list, container, false);
+        final ListView order = (ListView)parent_view.findViewById(R.id.list_order);
+        final LinearLayout linearLayout = (LinearLayout)parent_view.findViewById(R.id.sub_layout);
 
 
         mysql_task mysqlTask = new mysql_task(getContext()) {
@@ -197,13 +203,60 @@ class order_list extends Fragment {
         final int k = position;
         order.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                if(k == 0){
+                    View sub_view = inflater.inflate( R.layout.subscribe_order, container, false);
+                    Spinner spinner = (Spinner)sub_view.findViewById(R.id.month_spinner);
+                    ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getContext(),R.array.sub_months,android.R.layout.simple_spinner_item);
+                    arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinner.setAdapter(arrayAdapter);
+
+                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            sub_position = position;
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+
+                        }
+                    });
+
+
+                    Button sub = (Button)sub_view.findViewById(R.id.order_subscribe);
+                    sub.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mysql_task mysqlTask1 = new mysql_task(getContext()) {
+                                @Override
+                                public void onResponseReceived(String result) {
+
+                                }
+                            };
+                            String result;
+                            try {
+                                result = mysqlTask1.execute("subscribe_order",odid.get(position),String.valueOf(2*sub_position)).get();
+                                mysqlTask1.getMessage(result);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                    linearLayout.addView(sub_view);
+
+                }
                 orderListView = data(odid.get(position),k);
                 orderListView.notifyDataSetChanged();
                 order.setAdapter(orderListView);
+                container.invalidate();
             }
         });
-        return view;
+        return parent_view;
     }
     private order_list_view data(final String mParam1,int position){
         mysql_task mysqlTask = new mysql_task(getContext()) {
@@ -312,11 +365,13 @@ abstract class order_list_view extends ArrayAdapter{
         else{
             order_field.setText("Product Name:");
             order_quantity.setText(quantity.get(position));
+            final int k = position;
             re.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    OnDeleteClick(position);
+                    if(status.get(k).matches("2")) {
+                        OnDeleteClick(k);
+                    }
                 }
             });
         }
@@ -334,7 +389,7 @@ abstract class order_list_view extends ArrayAdapter{
                 st.setText("No status");
             }
             else{
-                st.setText(status.get(position));
+                st.setText(status_get(list,status.get(position)));
                 progress = Integer.valueOf(status.get(position));
             }
 
@@ -346,7 +401,7 @@ abstract class order_list_view extends ArrayAdapter{
             else {
                 progress = Integer.valueOf(status.get(position));
             }
-            st.setText(status.get(position));
+            st.setText(status_get(list,status.get(position)));
         }
 
         if(!list) {
@@ -371,8 +426,34 @@ abstract class order_list_view extends ArrayAdapter{
         this.list = list;
         this.quantity = quantity;
     }
+
+    private String status_get(boolean list,String value){
+
+        if(list){
+            if(value.matches("0") || value.matches("-1")){
+                return "PICK";
+            }
+            else if(value.matches("1")){
+                return "PACK";
+            }
+            else{
+                return "SHIP";
+            }
+        }
+        else{
+            if(value.matches("-1")){
+                return "INVOICED";
+            }
+            else if(value.matches("2")){
+                return "SHIPPED";
+            }
+            else if(value.matches("3")){
+                return "RETURN";
+            }
+            else{
+                return "PENDING";
+            }
+        }
+    }
 }
 
-interface orderListListener{
-    void onSwitchFragment(String value);
-}

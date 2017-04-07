@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -64,6 +65,10 @@ public class product_details extends Fragment {
         TextView name = (TextView)view.findViewById(R.id.name);
         TextView price = (TextView)view.findViewById(R.id.price);
         TextView description = (TextView)view.findViewById(R.id.description);
+        TextView available_q = (TextView)view.findViewById(R.id.product_available);
+
+        final EditText quantity = (EditText)view.findViewById(R.id.product_qunatity);
+
 
         ImageView image = (ImageView)view.findViewById(R.id.image);
 
@@ -86,6 +91,7 @@ public class product_details extends Fragment {
         url = mysqlTask.parse(result,"image").get(0);
         price.setText(mysqlTask.parse(result,"unitprice").get(0));
         description.setText(mysqlTask.parse(result,"product_description").get(0));
+        available_q.setText(mysqlTask.parse(result,"quantity").get(0));
 
         get_image img_task = new get_image();
 
@@ -112,7 +118,7 @@ public class product_details extends Fragment {
                     }
                 };
                 try {
-                    result = mysqlTask.execute("add_cart",mParam1,String.valueOf(user_id),String.valueOf(1)).get();
+                    result = mysqlTask.execute("add_cart",mParam1,String.valueOf(user_id),quantity.getText().toString()).get();
                     mysqlTask.getMessage(result);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
