@@ -93,6 +93,9 @@ class order_tabs extends FragmentPagerAdapter{
         else if(position == 1){
             value = "Returns";
         }
+        else if(position == 2){
+            value = "Subscriptions";
+        }
         //super.getPageTitle(position)
         return value;
     }
@@ -111,7 +114,7 @@ class order_tabs extends FragmentPagerAdapter{
     @Override
     public int getCount() {
 
-        return 2;
+        return 3;
     }
 }
 
@@ -174,8 +177,11 @@ class order_list extends Fragment {
             if(position == 0) {
                 result = mysqlTask.execute("get_orders", user_id).get();
             }
-            else{
+            else if(position == 1){
                 result = mysqlTask.execute("get_returns",user_id).get();
+            }
+            else{
+                result = mysqlTask.execute("get_subscriptions",user_id).get();
             }
 
         } catch (InterruptedException e) {
@@ -185,10 +191,11 @@ class order_list extends Fragment {
         }
 
 
-        if(position == 0) {
+        if(position == 0 || position == 2) {
             odid = mysqlTask.parse(result, "order_id");
             status = mysqlTask.parse(result, "status");
         }
+
         else{
             odid = mysqlTask.parse(result, "return_id");
         }
@@ -204,7 +211,7 @@ class order_list extends Fragment {
         order.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                if(k == 0){
+                if(k == 0 || k == 2){
                     View sub_view = inflater.inflate( R.layout.subscribe_order, container, false);
                     Spinner spinner = (Spinner)sub_view.findViewById(R.id.month_spinner);
                     ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getContext(),R.array.sub_months,android.R.layout.simple_spinner_item);
@@ -271,7 +278,7 @@ class order_list extends Fragment {
         ArrayList<String> quantity = null;
         String result = null;
         try {
-            if(position == 0) {
+            if(position == 0 || position == 2) {
                 result = mysqlTask.execute("get_order_list", mParam1).get();
             }
             else{
@@ -291,12 +298,19 @@ class order_list extends Fragment {
             status = mysqlTask.parse(result, "status");
             quantity = mysqlTask.parse(result, "quantity");
         }
-        else{
+        else if(position==1){
             no = mysqlTask.parse(result,"product_id");
             name = mysqlTask.parse(result, "product_name");
             status = mysqlTask.parse(result,"status");
             quantity = mysqlTask.parse(result, "quantity");
             k=1;
+        }
+        else{
+            no = mysqlTask.parse(result, "product_id");
+            name = mysqlTask.parse(result, "product_name");
+            status = mysqlTask.parse(result, "status");
+            quantity = mysqlTask.parse(result, "quantity");
+            k= 2;
         }
 
         final ArrayList<String> finalNo = no;
@@ -350,6 +364,7 @@ abstract class order_list_view extends ArrayAdapter{
         TextView order_field = (TextView)view.findViewById(R.id.order_field);
         TextView order = (TextView)view.findViewById(R.id.order_number);
         TextView st = (TextView)view.findViewById(R.id.order_status);
+        TextView st_text = (TextView)view.findViewById(R.id.text_order_status);
         TextView order_quantity_text = (TextView)view.findViewById(R.id.order_quantity_text);
         TextView order_quantity = (TextView)view.findViewById(R.id.order_quantity);
         ProgressBar progressBar = (ProgressBar)view.findViewById(R.id.progress_order);
@@ -375,7 +390,7 @@ abstract class order_list_view extends ArrayAdapter{
                 }
             });
         }
-        if(list && this.position == 1){
+        if(list && this.position == 1 ){
             l.removeView(re);
         }
 
@@ -394,7 +409,7 @@ abstract class order_list_view extends ArrayAdapter{
             }
 
         }
-        else {
+        else if(this.position ==0) {
             if(status.get(position).matches("None")){
                 progress = 0;
             }
@@ -409,6 +424,12 @@ abstract class order_list_view extends ArrayAdapter{
         }
         else{
             progressBar.setMax(2);
+        }
+        if(this.position == 2){
+            l.removeView(re);
+            l2.removeView(st);
+            l2.removeView(st_text);
+
         }
 
 
