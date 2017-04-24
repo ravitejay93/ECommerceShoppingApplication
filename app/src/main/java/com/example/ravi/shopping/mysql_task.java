@@ -904,7 +904,7 @@ public abstract class mysql_task extends AsyncTask<String, Void, String> impleme
             }
         }
         else if(params[0] == "subscribe_order") {
-            String url = "http://10.0.2.2/subscriptions_order.php";
+            String url = "http://10.0.2.2/place_subscription.php";
             try {
                 URL con = new URL(url);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) con.openConnection();
@@ -914,7 +914,7 @@ public abstract class mysql_task extends AsyncTask<String, Void, String> impleme
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
                 //Log.e("ERROR",params[8]);
-                String post_data =  URLEncoder.encode("oid", "UTF-8") + "=" + URLEncoder.encode(params[1], "UTF-8") + "&" +URLEncoder.encode("frequency", "UTF-8") + "=" + URLEncoder.encode(params[2], "UTF-8");
+                String post_data =  URLEncoder.encode("uid", "UTF-8") + "=" + URLEncoder.encode(params[1], "UTF-8") + "&"+ URLEncoder.encode("aid", "UTF-8") + "=" + URLEncoder.encode(params[2], "UTF-8") + "&" +URLEncoder.encode("frequency", "UTF-8") + "=" + URLEncoder.encode(params[3], "UTF-8");
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();
                 bufferedWriter.close();
@@ -952,6 +952,81 @@ public abstract class mysql_task extends AsyncTask<String, Void, String> impleme
                 BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
                 //Log.e("ERROR",params[8]);
                 String post_data =  URLEncoder.encode("uid", "UTF-8") + "=" + URLEncoder.encode(params[1], "UTF-8");
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                String result = "";
+                String line = "";
+                while ((line = bufferedReader.readLine()) != null) {
+                    result += line;
+                    Log.e("ERROR", result);
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+
+                return result;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else if(params[0] == "get_sub_list") {
+            String url = "http://10.0.2.2/get_sub_list.php";
+            try {
+                URL con = new URL(url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) con.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                //Log.e("ERROR",params[8]);
+                String post_data =  URLEncoder.encode("sid", "UTF-8") + "=" + URLEncoder.encode(params[1], "UTF-8");
+                bufferedWriter.write(post_data);
+                bufferedWriter.flush();
+                bufferedWriter.close();
+                outputStream.close();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                String result = "";
+                String line = "";
+                while ((line = bufferedReader.readLine()) != null) {
+                    result += line;
+                    Log.e("ERROR", result);
+                }
+                bufferedReader.close();
+                inputStream.close();
+                httpURLConnection.disconnect();
+
+                return result;
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        else if(params[0] == "subscribe_update") {
+            String url = "http://10.0.2.2/subscriptions_order.php";
+            try {
+                URL con = new URL(url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) con.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                //Log.e("ERROR",params[8]);
+                String post_data =  URLEncoder.encode("sid", "UTF-8") + "=" + URLEncoder.encode(params[1], "UTF-8") + "&" +URLEncoder.encode("frequency", "UTF-8") + "=" + URLEncoder.encode(params[2], "UTF-8");
                 bufferedWriter.write(post_data);
                 bufferedWriter.flush();
                 bufferedWriter.close();

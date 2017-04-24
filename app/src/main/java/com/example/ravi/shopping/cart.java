@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -37,6 +38,7 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
     //private String mParam2;
 
     public int position = 0;
+    public int sub_position = 0;
     public double total = 0;
     public double final_total = 0;
 
@@ -77,6 +79,27 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
+
+        View sub_view = inflater.inflate(R.layout.subscribe_order,container,false);
+
+        LinearLayout linearLayout = (LinearLayout)view.findViewById(R.id.sub_layout);
+        linearLayout.addView(sub_view);
+        Spinner spinner_sub = (Spinner)sub_view.findViewById(R.id.month_spinner);
+        ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getContext(),R.array.sub_months,android.R.layout.simple_spinner_item);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_sub.setAdapter(arrayAdapter);
+
+        spinner_sub.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sub_position = position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         final ListView listView = (ListView)view.findViewById(R.id.list_cart);
 
@@ -177,6 +200,29 @@ public class cart extends Fragment implements AdapterView.OnItemSelectedListener
                     e.printStackTrace();
                 }
 
+            }
+        });
+        Button sub = (Button)sub_view.findViewById(R.id.order_subscribe);
+        sub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mysql_task mysqlTask1 = new mysql_task(getContext()) {
+                    @Override
+                    public void onResponseReceived(String result) {
+
+                    }
+                };
+                String result;
+                try {
+                    result = mysqlTask1.execute("subscribe_order",mParam1,aid.get(position),String.valueOf(2*sub_position)).get();
+                    mysqlTask1.getMessage(result);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
 

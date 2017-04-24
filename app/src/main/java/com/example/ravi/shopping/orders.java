@@ -211,7 +211,7 @@ class order_list extends Fragment {
         order.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                if(k == 0 || k == 2){
+                if(k == 2){
                     View sub_view = inflater.inflate( R.layout.subscribe_order, container, false);
                     Spinner spinner = (Spinner)sub_view.findViewById(R.id.month_spinner);
                     ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(getContext(),R.array.sub_months,android.R.layout.simple_spinner_item);
@@ -243,7 +243,7 @@ class order_list extends Fragment {
                             };
                             String result;
                             try {
-                                result = mysqlTask1.execute("subscribe_order",odid.get(position),String.valueOf(2*sub_position)).get();
+                                result = mysqlTask1.execute("subscribe_update",odid.get(position),String.valueOf(2*sub_position)).get();
                                 mysqlTask1.getMessage(result);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -278,11 +278,14 @@ class order_list extends Fragment {
         ArrayList<String> quantity = null;
         String result = null;
         try {
-            if(position == 0 || position == 2) {
+            if(position == 0) {
                 result = mysqlTask.execute("get_order_list", mParam1).get();
             }
-            else{
+            else if(position == 1){
                 result = mysqlTask.execute("get_return_list", mParam1).get();
+            }
+            else{
+                result = mysqlTask.execute("get_sub_list",mParam1).get();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -385,7 +388,8 @@ abstract class order_list_view extends ArrayAdapter{
                 @Override
                 public void onClick(View v) {
                     if(status.get(k).matches("2")) {
-                        OnDeleteClick(k);
+                       OnDeleteClick(k);
+
                     }
                 }
             });
